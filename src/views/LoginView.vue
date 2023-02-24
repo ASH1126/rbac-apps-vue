@@ -1,14 +1,52 @@
-<script setup>
-import { RouterLink } from 'vue-router'
+<script>
+import { defineComponent, ref } from "vue";
+import FormTag from "../components/forms/FormTag.vue";
+import TextInput from "../components/forms/TextInput.vue";
+// import { RouterLink } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+
+export default defineComponent({
+  name: "LoginComposition",
+  props: {},
+  emits: ["error", "success", "warning", "info"],
+  components: {
+    "form-tag": FormTag,
+    "text-input": TextInput,
+  },
+
+  setup(props, ctx) {
+    let email = ref("");
+    let password = ref("");
+
+    function submitLogin() {
+      const auth = useAuthStore();
+      console.log("Submit Login", auth.user);
+      ctx.emit("success", "Login", "berhasil");
+    }
+
+    return {
+      email,
+      password,
+      submitLogin,
+    };
+  },
+});
 </script>
 
 <template>
   <section class="section">
     <div class="container mt-5">
       <div class="row">
-        <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+        <div
+          class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4"
+        >
           <div class="login-brand">
-            <img src="./../assets/img/stisla-fill.svg" alt="logo" width="100" class="shadow-light rounded-circle">
+            <img
+              src="./../assets/img/stisla-fill.svg"
+              alt="logo"
+              width="100"
+              class="shadow-light rounded-circle"
+            />
           </div>
 
           <div class="card card-primary">
@@ -17,71 +55,52 @@ import { RouterLink } from 'vue-router'
             </div>
 
             <div class="card-body">
-              <form>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
-                  <div class="invalid-feedback">
-                    Please fill in your email
-                  </div>
-                </div>
+              <form-tag
+                name="login_form"
+                @loginevt="submitLogin"
+                event="loginevt"
+              >
+                <text-input
+                  v-model="email"
+                  label="Email"
+                  type="email"
+                  id="email"
+                  name="email"
+                  required="true"
+                  placeholder="Masukan Email Anda"
+                  autofocus="autofocus"
+                >
+                </text-input>
+
+                <text-input
+                  v-model="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  name="password"
+                  required="true"
+                  placeholder="Masukan Password Anda"
+                >
+                </text-input>
 
                 <div class="form-group">
-                  <div class="d-block">
-                    <label for="password" class="control-label">Password</label>
-                    <div class="float-right">
-                      <a href="auth-forgot-password.html" class="text-small">
-                        Forgot Password?
-                      </a>
-                    </div>
-                  </div>
-                  <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
-                  <div class="invalid-feedback">
-                    please fill in your password
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" name="remember" class="custom-control-input" tabindex="3" id="remember-me">
-                    <label class="custom-control-label" for="remember-me">Remember Me</label>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <!-- <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg btn-block"
+                  >
                     Login
-                  </button> -->
-                  <RouterLink to="/" type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">Login</RouterLink>
+                  </button>
                 </div>
-              </form>
-              <div class="text-center mt-4 mb-3">
-                <div class="text-job text-muted">Login With Social</div>
-              </div>
-              <div class="row sm-gutters">
-                <div class="col-6">
-                  <a class="btn btn-block btn-social btn-facebook">
-                    <span class="fab fa-facebook"></span> Facebook
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a class="btn btn-block btn-social btn-twitter">
-                    <span class="fab fa-twitter"></span> Twitter
-                  </a>
-                </div>
-              </div>
+              </form-tag>
 
+              <div class="mt-5 text-muted text-center">
+                Don't have an account?
+                <a href="javascript:void(0)">Create One</a>
+              </div>
             </div>
-          </div>
-          <div class="mt-5 text-muted text-center">
-            Don't have an account? <a href="auth-register.html">Create One</a>
-          </div>
-          <div class="simple-footer">
-            Copyright &copy; Stisla 2018
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
-
