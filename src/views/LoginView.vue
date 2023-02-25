@@ -2,8 +2,9 @@
 import { defineComponent, ref } from "vue";
 import FormTag from "../components/forms/FormTag.vue";
 import TextInput from "../components/forms/TextInput.vue";
+import Security from "../router/security";
 // import { RouterLink } from "vue-router";
-import { useAuthStore } from "../stores/auth";
+// import { useAuthStore } from "../stores/auth";
 
 export default defineComponent({
   name: "LoginComposition",
@@ -19,8 +20,22 @@ export default defineComponent({
     let password = ref("");
 
     function submitLogin() {
-      const auth = useAuthStore();
-      console.log("Submit Login", auth.user);
+      const payload = {
+        email: email.value,
+        password: password.value,
+      };
+
+      fetch(
+        import.meta.env.VITE_RBAC_API_URL + "/login",
+        Security.requestOptions(payload)
+      )
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+        });
+
+      // const auth = useAuthStore();
+      // console.log("Submit Login", auth.user);
       ctx.emit("success", "Login", "berhasil");
     }
 
