@@ -3,13 +3,12 @@ import { defineComponent, ref } from "vue";
 import FormTag from "../components/forms/FormTag.vue";
 import TextInput from "../components/forms/TextInput.vue";
 import Security from "../router/security";
-// import { RouterLink } from "vue-router";
-// import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from "../stores/auth";
 
 export default defineComponent({
   name: "LoginComposition",
   props: {},
-  emits: ["error", "success", "warning", "info"],
+  emits: ["error"],
   components: {
     "form-tag": FormTag,
     "text-input": TextInput,
@@ -31,12 +30,32 @@ export default defineComponent({
       )
         .then((response) => response.json())
         .then((response) => {
-          console.log(response);
+          if (response.error) {
+            ctx.emit("error", response.message);
+          } else {
+            const auth = useAuthStore();
+            auth.user = response.data.token.token;
+            auth.user = {
+              id: response.data.user.id,
+              first_name: response.data.user.first_name,
+              last_name: response.data.user.last_name,
+              email: response.data.user.email,
+            };
+            // save info to cookie
+            let date = new Date();
+            let expDays = 1;
+            date.setTime(date.getTime() + expDays * 24 * 60 * 60 * 1000);
+            const expires = "expires=" + date.toUTCString();
+            // set the cookie
+            document.cookie =
+              "_site_data=" +
+              JSON.stringify(response.data) +
+              "; " +
+              expires +
+              "; path=/; SameSite=strict; Secure;";
+            window.location.href = "/";
+          }
         });
-
-      // const auth = useAuthStore();
-      // console.log("Submit Login", auth.user);
-      ctx.emit("success", "Login", "berhasil");
     }
 
     return {
